@@ -1,0 +1,24 @@
+model:
+  name: "CohereLabs/aya-expanse-8b"
+  torch_dtype: "bfloat16"
+  device_map: "auto"
+  hidden_size: 4096
+  intermediate_size: 14336
+  num_hidden_layers: 32
+  num_attention_heads: 32
+  num_key_value_heads: 8
+  vocab_size: 256000
+
+mechanistic:
+  formation_window_start: 20
+  formation_window_end: 23
+  target_layers: [20, 21, 22, 23]
+  subspace_rank: 4
+  eap_ig_steps: 10
+  decision_token_pos: -1
+
+safetune:
+  caa_threshold: 0.65
+  caa_alpha: 1.2
+  caa_target_layer: 20
+  tolerance: 1e-5

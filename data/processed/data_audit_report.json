@@ -1,0 +1,24 @@
+{
+  "total_ingested": 2108,
+  "duplicates_removed": 0,
+  "quality_rejected": 0,
+  "final_clean_samples": 2108,
+  "categories": {
+    "DH": 1020,
+    "DS": 1088
+  },
+  "unique_benign_tools": 17,
+  "unique_adversarial_tools": 62,
+  "length_stats_chars": {
+    "avg_clean": 2044.3,
+    "avg_corrupted": 2141.3,
+    "avg_control": 1952.2
+  },
+  "top_attack_types": {
+    "Others": 510,
+    "Data Security Harm": 374,
+    "Physical Data": 374,
+    "Physical Harm": 340,
+    "Financial Harm": 306
+  }
+}

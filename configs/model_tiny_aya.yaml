@@ -1,0 +1,24 @@
+model:
+  name: "CohereLabs/tiny-aya-global"
+  torch_dtype: "float32"
+  device_map: "auto"
+  hidden_size: 2048
+  intermediate_size: 8192
+  num_hidden_layers: 16
+  num_attention_heads: 16
+  num_key_value_heads: 4
+  vocab_size: 256000
+
+mechanistic:
+  formation_window_start: 10
+  formation_window_end: 12
+  target_layers: [10, 11, 12]
+  subspace_rank: 4
+  eap_ig_steps: 10
+  decision_token_pos: -1
+
+safetune:
+  caa_threshold: 0.65
+  caa_alpha: 1.2
+  caa_target_layer: 10
+  tolerance: 1e-5

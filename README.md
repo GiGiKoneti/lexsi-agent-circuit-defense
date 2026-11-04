@@ -76,25 +76,24 @@ This project chains **all four repositories** of Lexsi Labs' Track 2 stack:
 
 ## ⚡ Quickstart
 
+### Local Setup & Unit Tests
 ```bash
 # 1. Clone repository
 git clone https://github.com/GiGiKoneti/lexsi-agent-circuit-defense.git
 cd lexsi-agent-circuit-defense
 
-# 2. Install dependencies
-pip install -r requirements.txt
+# 2. Run mathematical invariant & template unit tests
+python3 tests/test_curator.py
+python3 tests/test_safetune_math.py
 
-# 3. Step 1: Synthesize CuratorKIT triplets
-python scripts/01_generate_triplets.py
+# 3. Generate 2,000 contrastive triplets (CuratorKIT)
+python3 scripts/01_generate_triplets.py --num_samples 2000
+```
 
-# 4. Step 2: Run CircuitKIT EAP-IG circuit discovery
-python scripts/02_run_circuit_discovery.py
-
-# 5. Step 3: Apply SafeTune orthogonal weight surgery
-python scripts/03_apply_weight_surgery.py
-
-# 6. Step 4: Run full AuditKIT benchmarking
-python scripts/04_run_full_audit.py
+### Full Cloud GPU Pipeline (Vast.ai / A100 / H100)
+```bash
+# Run automated end-to-end pipeline on Vast.ai
+bash scripts/vast_setup.sh
 ```
 
 ---
