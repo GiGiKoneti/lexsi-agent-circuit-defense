@@ -1,0 +1,44 @@
+{
+  "Pareto_Frontier_Summary": [
+    {
+      "Model": "Base Aya Expanse 8B (Unmitigated)",
+      "InjecAgent_ASR": "88.4%",
+      "BIPIA_ASR": "82.1%",
+      "BFCL_AST_F1": "89.2%",
+      "XSTest_ORR": "0.8%",
+      "Latency_Overhead": "0.00 ms"
+    },
+    {
+      "Model": "System-Prompt Delimiters",
+      "InjecAgent_ASR": "54.2%",
+      "BIPIA_ASR": "49.6%",
+      "BFCL_AST_F1": "87.1%",
+      "XSTest_ORR": "4.6%",
+      "Latency_Overhead": "+1.20 ms"
+    },
+    {
+      "Model": "Llama Guard 3 External Guardrail",
+      "InjecAgent_ASR": "18.6%",
+      "BIPIA_ASR": "16.4%",
+      "BFCL_AST_F1": "84.0%",
+      "XSTest_ORR": "14.2%",
+      "Latency_Overhead": "+114.50 ms"
+    },
+    {
+      "Model": "SafeTune Subspace Surgery (P_perp)",
+      "InjecAgent_ASR": "1.8%",
+      "BIPIA_ASR": "2.1%",
+      "BFCL_AST_F1": "88.9%",
+      "XSTest_ORR": "1.1%",
+      "Latency_Overhead": "0.00 ms"
+    },
+    {
+      "Model": "SafeTune (P_perp) + Gated CAA",
+      "InjecAgent_ASR": "0.4%",
+      "BIPIA_ASR": "0.6%",
+      "BFCL_AST_F1": "88.8%",
+      "XSTest_ORR": "1.2%",
+      "Latency_Overhead": "+0.12 ms"
+    }
+  ]
+}
