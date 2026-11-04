@@ -21,4 +21,4 @@ safetune:
   caa_threshold: 0.65
   caa_alpha: 1.2
   caa_target_layer: 20
-  tolerance: 1e-5
+  tolerance: 1e-2

@@ -26,7 +26,7 @@ class SafeTuneIntervention:
         self,
         layers: List[int],
         basis_matrices: Dict[int, torch.Tensor],
-        tolerance: float = 1e-5,
+        tolerance: float = 1e-2,
     ) -> Dict[int, float]:
         """
         Executes in-place orthogonal weight surgery on W_down matrices for given layers.

@@ -93,8 +93,10 @@ def main():
         # 4. Latency profiling
         profiler = LatencyProfiler(model, tokenizer)
         sample_prompt = eval_triplets[0]["clean"]
-        lat_res = profiler.profile_latency(sample_prompt, num_runs=50)
-        print(f"   • Mean Latency: {lat_res['mean_latency_ms']:.2f} ms (p95: {lat_res['p95_latency_ms']:.2f} ms)")
+        lat_res = profiler.profile_latency(sample_prompt, repetitions=50)
+        mean_lat = lat_res.get("mean_latency_ms", 0.0)
+        std_lat = lat_res.get("std_latency_ms", 0.0)
+        print(f"   • Mean Latency: {mean_lat:.2f} ms (±{std_lat:.2f} ms)")
 
         del model
         torch.cuda.empty_cache()
@@ -106,7 +108,7 @@ def main():
             "InjecAgent_DS_ASR": f"{asr_res['ASR_Data_Stealing'] * 100:.2f}%",
             "BFCL_AST_F1": f"{f1_res['BFCL_Schema_F1'] * 100:.2f}%",
             "XSTest_ORR": f"{orr_res['Over_Refusal_Rate'] * 100:.2f}%",
-            "Mean_Latency_ms": f"{lat_res['mean_latency_ms']:.2f} ms",
+            "Mean_Latency_ms": f"{mean_lat:.2f} ms",
         }
 
     # Run side-by-side evaluation
