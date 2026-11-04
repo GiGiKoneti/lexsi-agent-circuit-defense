@@ -35,7 +35,7 @@ echo "=========================================================="
 echo "▶️ STEP 1: CuratorKIT Triplet Synthesis & Preprocessing"
 echo "=========================================================="
 if [ ! -f "data/processed/triplets_cleaned.jsonl" ]; then
-    python scripts/01_generate_triplets.py --num_samples 2108 --output_path data/processed/triplets.jsonl
+    python scripts/01_generate_triplets.py --output_path data/processed/triplets.jsonl
     python scripts/preprocess_and_validate.py
 else
     echo "✓ Cleaned dataset already present: data/processed/triplets_cleaned.jsonl"

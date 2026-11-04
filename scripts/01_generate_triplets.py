@@ -31,36 +31,37 @@ def main():
     ds_enhanced = "data/raw/injecagent/test_cases_ds_enhanced.json"
     tools_path = "data/raw/injecagent/tools.json"
 
-    if args.use_real_benchmarks and os.path.exists(dh_base) and os.path.exists(ds_base):
-        print(f"📥 Ingesting official InjecAgent benchmark datasets (UIUC Kang Lab)...")
-        print(f"   • DH Base: {dh_base}")
-        print(f"   • DS Base: {ds_base}")
-        print(f"   • DH Enhanced: {dh_enhanced}")
-        print(f"   • DS Enhanced: {ds_enhanced}")
-        print(f"   • Tool Schemas: {tools_path}")
-
-        triplets = curator.curate_from_injecagent(
-            dh_path=dh_base,
-            ds_path=ds_base,
-            enhanced_dh_path=dh_enhanced,
-            enhanced_ds_path=ds_enhanced,
-            tools_path=tools_path,
-            as_curatorkit_samples=False,
+    if not (os.path.exists(dh_base) and os.path.exists(ds_base) and os.path.exists(tools_path)):
+        raise FileNotFoundError(
+            f"❌ Real benchmark files missing in data/raw/injecagent! "
+            f"Run 'python scripts/download_real_benchmarks.py' first to download the official InjecAgent benchmark."
         )
 
-        print(f"📋 Exporting official CuratorKIT DataSamples with ProvenanceRecords...")
-        curatorkit_samples = curator.curate_from_injecagent(
-            dh_path=dh_base,
-            ds_path=ds_base,
-            enhanced_dh_path=dh_enhanced,
-            enhanced_ds_path=ds_enhanced,
-            tools_path=tools_path,
-            as_curatorkit_samples=True,
-        )
-    else:
-        print(f"⚠️ Raw benchmark files not found, falling back to synthetic generator...")
-        triplets = curator.generate_synthetic_benchmark_dataset(num_samples=args.num_samples, as_curatorkit_samples=False)
-        curatorkit_samples = curator.generate_synthetic_benchmark_dataset(num_samples=args.num_samples, as_curatorkit_samples=True)
+    print(f"📥 Ingesting official InjecAgent benchmark datasets (UIUC Kang Lab)...")
+    print(f"   • DH Base: {dh_base}")
+    print(f"   • DS Base: {ds_base}")
+    print(f"   • DH Enhanced: {dh_enhanced}")
+    print(f"   • DS Enhanced: {ds_enhanced}")
+    print(f"   • Tool Schemas: {tools_path}")
+
+    triplets = curator.curate_from_injecagent(
+        dh_path=dh_base,
+        ds_path=ds_base,
+        enhanced_dh_path=dh_enhanced,
+        enhanced_ds_path=ds_enhanced,
+        tools_path=tools_path,
+        as_curatorkit_samples=False,
+    )
+
+    print(f"📋 Exporting official CuratorKIT DataSamples with ProvenanceRecords...")
+    curatorkit_samples = curator.curate_from_injecagent(
+        dh_path=dh_base,
+        ds_path=ds_base,
+        enhanced_dh_path=dh_enhanced,
+        enhanced_ds_path=ds_enhanced,
+        tools_path=tools_path,
+        as_curatorkit_samples=True,
+    )
 
     os.makedirs(os.path.dirname(args.output_path), exist_ok=True)
     with open(args.output_path, "w", encoding="utf-8") as f:
