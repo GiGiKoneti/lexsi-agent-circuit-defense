@@ -1,6 +1,6 @@
 model:
   name: "CohereLabs/tiny-aya-global"
-  torch_dtype: "float32"
+  torch_dtype: "bfloat16"
   device_map: "auto"
   hidden_size: 2048
   intermediate_size: 8192
