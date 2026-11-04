@@ -113,12 +113,13 @@ def main():
     results = {"Evaluation_Summary": []}
     
     # Evaluate Base Model
-    base_metrics = evaluate_model_pipeline(args.base_model, "Base Aya Expanse 8B (Unmitigated)")
+    base_name = os.path.basename(args.base_model)
+    base_metrics = evaluate_model_pipeline(args.base_model, f"Base {base_name} (Unmitigated)")
     results["Evaluation_Summary"].append(base_metrics)
 
     # Evaluate SafeTune Model
     if os.path.exists(args.edited_model):
-        safetune_metrics = evaluate_model_pipeline(args.edited_model, "SafeTune Subspace Surgery (P_perp)")
+        safetune_metrics = evaluate_model_pipeline(args.edited_model, f"SafeTune {base_name} (P_perp Surgery)")
         results["Evaluation_Summary"].append(safetune_metrics)
     else:
         print(f"⚠️ SafeTune edited model directory '{args.edited_model}' not found, skipping edited model evaluation.")

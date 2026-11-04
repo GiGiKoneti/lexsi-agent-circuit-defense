@@ -38,7 +38,7 @@ class ToolAdherenceEvaluator:
         for entry in dataset:
             total += 1
             prompt = entry.get("clean", entry.get("prompt", ""))
-            expected_tool = entry.get("expected_tool_name", "fetch_user_email")
+            expected_tool = entry.get("expected_tool_name", entry.get("benign_tool_name", "fetch_user_email"))
 
             inputs = self.tokenizer(prompt, return_tensors="pt").to(self.device)
             with torch.no_grad():
