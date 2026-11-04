@@ -32,16 +32,21 @@ fi
 
 # 5. Execute End-to-End Pipeline
 echo "=========================================================="
-echo "▶️ STEP 1: CuratorKIT Triplet Synthesis"
+echo "▶️ STEP 1: CuratorKIT Triplet Synthesis & Preprocessing"
 echo "=========================================================="
-python scripts/01_generate_triplets.py --num_samples 2000 --output_path data/processed/triplets.jsonl
+if [ ! -f "data/processed/triplets_cleaned.jsonl" ]; then
+    python scripts/01_generate_triplets.py --num_samples 2108 --output_path data/processed/triplets.jsonl
+    python scripts/preprocess_and_validate.py
+else
+    echo "✓ Cleaned dataset already present: data/processed/triplets_cleaned.jsonl"
+fi
 
 echo "=========================================================="
 echo "▶️ STEP 2: CircuitKIT EAP-IG Circuit Discovery & SVD Subspace Extraction"
 echo "=========================================================="
 python scripts/02_run_circuit_discovery.py \
     --config configs/model_aya_8b.yaml \
-    --triplets_path data/processed/triplets.jsonl \
+    --triplets_path data/processed/triplets_cleaned.jsonl \
     --output_basis data/processed/basis_matrices_k4.pt \
     --num_samples 250
 
@@ -59,7 +64,7 @@ echo "=========================================================="
 python scripts/04_run_full_audit.py \
     --base_model CohereLabs/aya-expanse-8b \
     --edited_model ./safetune_aya8b_projected \
-    --triplets_path data/processed/triplets.jsonl \
+    --triplets_path data/processed/triplets_cleaned.jsonl \
     --output_report data/processed/audit_report.json
 
 echo "=========================================================="

@@ -13,20 +13,22 @@ import sys
 import json
 import argparse
 import yaml
-import torch
+
+try:
+    import torch
+    TORCH_AVAILABLE = True
+except ImportError:
+    TORCH_AVAILABLE = False
+    torch = None
 
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
-
-from src.audit.asr_evaluator import AgentSafetyAuditor
-from src.audit.tool_adherence_eval import ToolAdherenceEvaluator
-from src.audit.latency_profiler import LatencyProfiler
 
 
 def main():
     parser = argparse.ArgumentParser(description="Run AuditKIT Comprehensive Evaluation")
     parser.add_argument("--base_model", type=str, default="CohereLabs/aya-expanse-8b", help="Base model identifier")
     parser.add_argument("--edited_model", type=str, default="./safetune_aya8b_projected", help="SafeTune edited checkpoint path")
-    parser.add_argument("--triplets_path", type=str, default="data/processed/triplets.jsonl", help="Triplets path")
+    parser.add_argument("--triplets_path", type=str, default="data/processed/triplets_cleaned.jsonl", help="Triplets path")
     parser.add_argument("--output_report", type=str, default="data/processed/audit_report.json", help="Output audit report path")
     parser.add_argument("--mock", action="store_true", help="Run benchmark in mock evaluation mode")
     parser.add_argument("--num_samples", type=int, default=100, help="Number of samples to evaluate")
@@ -34,7 +36,7 @@ def main():
 
     print(f"📊 AuditKIT: Initializing Automated Evaluation Spine")
 
-    if args.mock or not torch.cuda.is_available():
+    if args.mock or not TORCH_AVAILABLE or not torch.cuda.is_available():
         print("⚠️  Running simulated AuditKIT benchmark evaluation (validating scoring pipeline)...")
         results = {
             "Pareto_Frontier_Summary": [

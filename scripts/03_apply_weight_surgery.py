@@ -9,12 +9,17 @@ import os
 import sys
 import argparse
 import yaml
-import torch
+
+try:
+    import torch
+    TORCH_AVAILABLE = True
+except ImportError:
+    TORCH_AVAILABLE = False
+    torch = None
+
+import numpy as np
 
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
-
-from src.safetune.weight_projector import SafeTuneIntervention
-from src.utils.export_helpers import load_basis_matrices, export_safetensors_checkpoint
 
 
 def main():
@@ -39,31 +44,38 @@ def main():
     print(f"   • Subspace Rank (k): {k}")
     print(f"   • Tolerance Bound: {tolerance}")
 
-    if args.mock or not torch.cuda.is_available():
+    if args.mock or not TORCH_AVAILABLE or not torch.cuda.is_available():
         print("⚠️  Running synthetic weight surgery verification test (Linear Algebra Invariant Check)...")
         # Load or generate basis
-        if os.path.exists(args.basis_path):
-            basis_dict = load_basis_matrices(args.basis_path)
+        basis_dict = {}
+        npz_path = args.basis_path.replace(".pt", ".npz")
+        if os.path.exists(npz_path):
+            data = np.load(npz_path)
+            basis_dict = {int(k): data[k] for k in data.files}
+        elif TORCH_AVAILABLE and os.path.exists(args.basis_path):
+            from src.utils.export_helpers import load_basis_matrices
+            t_dict = load_basis_matrices(args.basis_path)
+            basis_dict = {l: t_dict[l].numpy() for l in t_dict}
         else:
-            basis_dict = {}
+            np.random.seed(42)
             for l in target_layers:
-                M = torch.randn(hidden_size, k)
-                Q, _ = torch.linalg.qr(M)
+                M = np.random.randn(hidden_size, k)
+                Q, _ = np.linalg.qr(M)
                 basis_dict[l] = Q
 
         for l in target_layers:
             U_S = basis_dict[l]
             # Simulate W_down: shape (hidden_size, intermediate_size)
-            W_down = torch.randn(hidden_size, intermediate_size)
+            W_down = np.random.randn(hidden_size, intermediate_size)
 
             # Associative projection: W* = W - U_S @ (U_S^T @ W)
-            u_proj = torch.matmul(U_S.t(), W_down)
-            null_comp = torch.matmul(U_S, u_proj)
+            u_proj = U_S.T @ W_down
+            null_comp = U_S @ u_proj
             W_down_star = W_down - null_comp
 
             # Validation check: U_S^T @ W_down* must be zero
-            residual_proj = torch.matmul(U_S.t(), W_down_star)
-            max_error = torch.max(torch.abs(residual_proj)).item()
+            residual_proj = U_S.T @ W_down_star
+            max_error = np.max(np.abs(residual_proj))
 
             print(f"   • Layer {l}: Max Nullification Error = {max_error:.2e}")
             assert max_error < tolerance, f"Invariant violated at layer {l}: {max_error} >= {tolerance}"
@@ -73,6 +85,8 @@ def main():
 
     # Real model surgery
     from transformers import AutoModelForCausalLM, AutoTokenizer
+    from src.safetune.weight_projector import SafeTuneIntervention
+    from src.utils.export_helpers import load_basis_matrices, export_safetensors_checkpoint
     print(f"📥 Loading model for weight surgery: {cfg['model']['name']}...")
     tokenizer = AutoTokenizer.from_pretrained(cfg["model"]["name"])
     model = AutoModelForCausalLM.from_pretrained(
