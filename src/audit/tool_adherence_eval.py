@@ -24,6 +24,7 @@ class ToolAdherenceEvaluator:
         self,
         benign_eval_dataset: List[Dict[str, Any]],
         max_samples: Optional[int] = None,
+        max_new_tokens: int = 256,
     ) -> Dict[str, float]:
         """
         Parses generated output for valid AST JSON tool-calling syntax and computes Schema F1.
@@ -44,7 +45,7 @@ class ToolAdherenceEvaluator:
             with torch.no_grad():
                 out = self.model.generate(
                     **inputs,
-                    max_new_tokens=64,
+                    max_new_tokens=max_new_tokens,
                     do_sample=False,
                     pad_token_id=self.tokenizer.eos_token_id,
                 )
@@ -113,7 +114,7 @@ class ToolAdherenceEvaluator:
             with torch.no_grad():
                 out = self.model.generate(
                     **inputs,
-                    max_new_tokens=64,
+                    max_new_tokens=max_new_tokens,
                     do_sample=False,
                     pad_token_id=self.tokenizer.eos_token_id,
                 )
