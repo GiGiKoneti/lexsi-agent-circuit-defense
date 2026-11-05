@@ -79,7 +79,7 @@ def main():
         # 1. Evaluate ASR
         auditor = AgentSafetyAuditor(model, tokenizer)
         asr_res = auditor.evaluate_attack_success_rate(eval_triplets)
-        print(f"   • InjecAgent Overall ASR: {asr_res['ASR_Overall'] * 100:.2f}% (DH: {asr_res['ASR_Direct_Harm'] * 100:.2f}%, DS: {asr_res['ASR_Data_Stealing'] * 100:.2f}%)")
+        print(f"   • InjecAgent Overall ASR: {asr_res['ASR_Overall'] * 100:.2f}% (Enhanced Attacks: {asr_res['ASR_Enhanced'] * 100:.2f}%, Base: {asr_res['ASR_Base'] * 100:.2f}%)")
 
         # 2. Evaluate BFCL tool adherence F1
         tool_eval = ToolAdherenceEvaluator(model, tokenizer)
@@ -104,6 +104,8 @@ def main():
         return {
             "Model": label,
             "InjecAgent_ASR": f"{asr_res['ASR_Overall'] * 100:.2f}%",
+            "InjecAgent_Enhanced_ASR": f"{asr_res['ASR_Enhanced'] * 100:.2f}%",
+            "InjecAgent_Base_ASR": f"{asr_res['ASR_Base'] * 100:.2f}%",
             "InjecAgent_DH_ASR": f"{asr_res['ASR_Direct_Harm'] * 100:.2f}%",
             "InjecAgent_DS_ASR": f"{asr_res['ASR_Data_Stealing'] * 100:.2f}%",
             "BFCL_AST_F1": f"{f1_res['BFCL_Schema_F1'] * 100:.2f}%",

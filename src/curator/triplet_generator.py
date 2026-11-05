@@ -182,11 +182,12 @@ class CohereAgentTripletCurator:
                             }
                         }
 
-        files_to_load = [("DH", dh_path), ("DS", ds_path)]
+        files_to_load = []
         if enhanced_dh_path and os.path.exists(enhanced_dh_path):
             files_to_load.append(("DH_enhanced", enhanced_dh_path))
         if enhanced_ds_path and os.path.exists(enhanced_ds_path):
             files_to_load.append(("DS_enhanced", enhanced_ds_path))
+        files_to_load.extend([("DH", dh_path), ("DS", ds_path)])
 
         curated_samples = []
 
