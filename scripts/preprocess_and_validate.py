@@ -113,8 +113,13 @@ def audit_and_preprocess():
         for text in [clean_text, corrupted_text, control_text]:
             start_turns = text.count("<|START_OF_TURN_TOKEN|>")
             end_turns = text.count("<|END_OF_TURN_TOKEN|>")
-            # Must end with open turn for chatbot: <|START_OF_TURN_TOKEN|><|CHATBOT_TOKEN|>
-            if start_turns != end_turns + 1 or not text.endswith("<|START_OF_TURN_TOKEN|><|CHATBOT_TOKEN|>"):
+            # Must end with open turn for chatbot: <|START_OF_TURN_TOKEN|><|CHATBOT_TOKEN|> (optionally primed with Thought:)
+            valid_end = (
+                text.endswith("<|START_OF_TURN_TOKEN|><|CHATBOT_TOKEN|>")
+                or text.endswith("<|START_OF_TURN_TOKEN|><|CHATBOT_TOKEN|>Thought: ")
+                or text.endswith("<|START_OF_TURN_TOKEN|><|CHATBOT_TOKEN|>Thought:")
+            )
+            if start_turns != end_turns + 1 or not valid_end:
                 token_syntax_errors += 1
                 break
         else:

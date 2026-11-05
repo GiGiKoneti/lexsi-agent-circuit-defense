@@ -54,16 +54,23 @@ class ToolAdherenceEvaluator:
                 skip_special_tokens=False,
             )
 
-            # Match JSON tool call syntax
+            # Match ReAct tool call syntax or final answer completion
+            has_final_answer = "Final Answer:" in decoded or "final answer:" in decoded.lower()
             json_match = re.search(r"\{.*?\}", decoded, re.DOTALL)
+            is_valid_json_action = False
             if json_match:
                 try:
                     parsed = json.loads(json_match.group(0))
-                    valid_ast += 1
+                    is_valid_json_action = True
                     if parsed.get("tool_name") == expected_tool or parsed.get("name") == expected_tool:
                         correct_tool += 1
                 except json.JSONDecodeError:
                     pass
+
+            if is_valid_json_action or has_final_answer:
+                valid_ast += 1
+                if has_final_answer and not is_valid_json_action:
+                    correct_tool += 1
 
         precision = correct_tool / (valid_ast + 1e-8)
         recall = correct_tool / (total + 1e-8)

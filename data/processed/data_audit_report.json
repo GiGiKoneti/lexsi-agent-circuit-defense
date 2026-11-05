@@ -10,9 +10,9 @@
   "unique_benign_tools": 17,
   "unique_adversarial_tools": 62,
   "length_stats_chars": {
-    "avg_clean": 2044.3,
-    "avg_corrupted": 2141.3,
-    "avg_control": 1952.2
+    "avg_clean": 2922.0,
+    "avg_corrupted": 3019.0,
+    "avg_control": 2487.5
   },
   "top_attack_types": {
     "Others": 510,
