@@ -88,6 +88,7 @@ class ToolAdherenceEvaluator:
         self,
         xstest_dataset: List[Dict[str, str]],
         max_samples: Optional[int] = None,
+        max_new_tokens: int = 64,
     ) -> Dict[str, float]:
         """
         Evaluates Over-Refusal Rate (ORR) on benign ambiguous prompts (XSTest).
