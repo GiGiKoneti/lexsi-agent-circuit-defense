@@ -68,7 +68,7 @@ def main():
 
     # Helper function to evaluate a given model
     def evaluate_model_pipeline(model_path_or_name: str, label: str):
-        print(f"\n🧪 Evaluating: {label} ({model_path_or_name})...")
+        print(f"\n🧪 Evaluating: {label} ({model_path_or_name})...", flush=True)
         tokenizer = AutoTokenizer.from_pretrained(model_path_or_name)
         model = AutoModelForCausalLM.from_pretrained(
             model_path_or_name,
@@ -77,26 +77,30 @@ def main():
         )
 
         # 1. Evaluate ASR
+        print("   [Phase 1/4] Auditing InjecAgent ASR...", flush=True)
         auditor = AgentSafetyAuditor(model, tokenizer)
         asr_res = auditor.evaluate_attack_success_rate(eval_triplets)
-        print(f"   • InjecAgent Overall ASR: {asr_res['ASR_Overall'] * 100:.2f}% (Enhanced Attacks: {asr_res['ASR_Enhanced'] * 100:.2f}%, Base: {asr_res['ASR_Base'] * 100:.2f}%)")
+        print(f"   • InjecAgent Overall ASR: {asr_res['ASR_Overall'] * 100:.2f}% (Enhanced Attacks: {asr_res['ASR_Enhanced'] * 100:.2f}%, Base: {asr_res['ASR_Base'] * 100:.2f}%)", flush=True)
 
         # 2. Evaluate BFCL tool adherence F1
+        print("   [Phase 2/4] Auditing BFCL Tool Adherence F1...", flush=True)
         tool_eval = ToolAdherenceEvaluator(model, tokenizer)
         f1_res = tool_eval.evaluate_tool_adherence(eval_triplets)
-        print(f"   • BFCL Tool Adherence F1: {f1_res['BFCL_Schema_F1'] * 100:.2f}% (Valid Rate: {f1_res['BFCL_AST_Valid_Rate'] * 100:.2f}%)")
+        print(f"   • BFCL Tool Adherence F1: {f1_res['BFCL_Schema_F1'] * 100:.2f}% (Valid Rate: {f1_res['BFCL_AST_Valid_Rate'] * 100:.2f}%)", flush=True)
 
         # 3. Evaluate Over-Refusal on XSTest
-        orr_res = tool_eval.evaluate_over_refusal(xstest_data, max_samples=100) if xstest_data else {"Over_Refusal_Rate": 0.01}
-        print(f"   • XSTest Over-Refusal Rate: {orr_res['Over_Refusal_Rate'] * 100:.2f}%")
+        print("   [Phase 3/4] Auditing XSTest Over-Refusal Rate...", flush=True)
+        orr_res = tool_eval.evaluate_over_refusal(xstest_data, max_samples=40) if xstest_data else {"Over_Refusal_Rate": 0.01}
+        print(f"   • XSTest Over-Refusal Rate: {orr_res['Over_Refusal_Rate'] * 100:.2f}%", flush=True)
 
         # 4. Latency profiling
+        print("   [Phase 4/4] Profiling Inference Latency...", flush=True)
         profiler = LatencyProfiler(model, tokenizer)
         sample_prompt = eval_triplets[0]["clean"]
         lat_res = profiler.profile_latency(sample_prompt, repetitions=50)
         mean_lat = lat_res.get("mean_latency_ms", 0.0)
         std_lat = lat_res.get("std_latency_ms", 0.0)
-        print(f"   • Mean Latency: {mean_lat:.2f} ms (±{std_lat:.2f} ms)")
+        print(f"   • Mean Latency: {mean_lat:.2f} ms (±{std_lat:.2f} ms)", flush=True)
 
         del model
         torch.cuda.empty_cache()

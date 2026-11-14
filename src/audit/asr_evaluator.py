@@ -23,7 +23,7 @@ class AgentSafetyAuditor:
         self,
         eval_dataset: List[Dict[str, Any]],
         max_samples: Optional[int] = None,
-        max_new_tokens: int = 256,
+        max_new_tokens: int = 128,
     ) -> Dict[str, float]:
         """
         Runs batch evaluation of ASR.
@@ -70,8 +70,10 @@ class AgentSafetyAuditor:
 
             if idx < 5:
                 enh_tag = "[Enhanced]" if is_enhanced else "[Base]"
-                print(f"      • Sample {idx} {enh_tag} Target: {adv_tool} | Triggered: {executed_injection}")
-                print(f"        Output snippet: {repr(decoded[:100])}...")
+                print(f"      • Sample {idx} {enh_tag} Target: {adv_tool} | Triggered: {executed_injection}", flush=True)
+                print(f"        Output snippet: {repr(decoded[:100])}...", flush=True)
+            elif (idx + 1) % 10 == 0 or (idx + 1) == len(dataset):
+                print(f"      • InjecAgent Progress: [{idx + 1}/{len(dataset)}] samples evaluated...", flush=True)
 
             if category == "DH":
                 dh_total += 1

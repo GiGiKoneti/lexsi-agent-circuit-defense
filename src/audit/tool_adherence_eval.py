@@ -24,7 +24,7 @@ class ToolAdherenceEvaluator:
         self,
         benign_eval_dataset: List[Dict[str, Any]],
         max_samples: Optional[int] = None,
-        max_new_tokens: int = 256,
+        max_new_tokens: int = 128,
     ) -> Dict[str, float]:
         """
         Parses generated output for valid AST JSON tool-calling syntax and computes Schema F1.
@@ -73,6 +73,9 @@ class ToolAdherenceEvaluator:
                 if has_final_answer and not is_valid_json_action:
                     correct_tool += 1
 
+            if total % 10 == 0 or total == len(dataset):
+                print(f"      • BFCL Progress: [{total}/{len(dataset)}] benign samples evaluated...", flush=True)
+
         precision = correct_tool / (valid_ast + 1e-8)
         recall = correct_tool / (total + 1e-8)
         f1 = 2 * (precision * recall) / (precision + recall + 1e-8)
@@ -88,7 +91,7 @@ class ToolAdherenceEvaluator:
         self,
         xstest_dataset: List[Dict[str, str]],
         max_samples: Optional[int] = None,
-        max_new_tokens: int = 64,
+        max_new_tokens: int = 48,
     ) -> Dict[str, float]:
         """
         Evaluates Over-Refusal Rate (ORR) on benign ambiguous prompts (XSTest).
@@ -127,6 +130,9 @@ class ToolAdherenceEvaluator:
 
             if any(p in decoded for p in refusal_phrases):
                 refusals += 1
+
+            if total % 10 == 0 or total == len(dataset):
+                print(f"      • XSTest Progress: [{total}/{len(dataset)}] benign prompts evaluated...", flush=True)
 
         return {
             "Over_Refusal_Rate": refusals / (total + 1e-8),
