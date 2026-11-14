@@ -11,7 +11,10 @@ import plotly.graph_objects as go
 
 # Configuration
 MODEL_ID = os.environ.get("MODEL_ID", "CohereLabs/aya-expanse-8b")
-EDITED_PATH = os.environ.get("EDITED_PATH", "./safetune_aya8b_projected")
+EDITED_PATH = os.environ.get(
+    "EDITED_PATH",
+    "./safetune_model_projected" if os.path.exists("./safetune_model_projected") else "./safetune_aya8b_projected"
+)
 BASIS_PATH = os.environ.get("BASIS_PATH", "data/processed/basis_matrices_k4.pt")
 
 DEVICE = "cuda" if torch.cuda.is_available() else "cpu"
