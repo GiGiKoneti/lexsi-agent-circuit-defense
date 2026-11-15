@@ -197,5 +197,7 @@ with gr.Blocks(theme=gr.themes.Soft(primary_hue="blue")) as demo:
 
 
 if __name__ == "__main__":
-    demo.launch(server_name="0.0.0.0", server_port=7860)
+    import sys
+    is_colab = "COLAB_GPU" in os.environ or "google.colab" in sys.modules or "COLAB_RELEASE_TAG" in os.environ
+    demo.launch(server_name="0.0.0.0", server_port=7860, share=is_colab)
 
